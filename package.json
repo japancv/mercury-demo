@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint \"**/*.{ts,tsx,js,jsx}\"",
+    "lint": "eslint --ignore-path .gitignore \"**/*.+(ts|js|tsx)\"",
     "prepare": "husky install"
   },
   "eslintConfig": {
