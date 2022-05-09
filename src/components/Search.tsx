@@ -38,6 +38,7 @@ const images: SimilarImages[] = [
 const Search = () => {
   const [loading, setLoading] = useState(false);
   const [imageUrlBase64, setImageUrlBase64] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [similarImages, setSimilarImages] = useState<SimilarImages[]>(images);
   const uploadButton = (
     <div>
