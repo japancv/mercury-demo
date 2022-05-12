@@ -1,10 +1,13 @@
-import { Upload, message, UploadProps, Button, Image } from 'antd';
+import { Upload, message, UploadProps, Button } from 'antd';
 import {
   LoadingOutlined,
   PlusOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
+import FirebaseImage from './FirebaseImage';
+import { storage } from '../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
 
 const getBase64 = (
   img: File | undefined,
@@ -16,21 +19,21 @@ const getBase64 = (
 };
 
 type SimilarImages = {
-  url: string;
+  uid: string;
   similarityScore: number;
 };
 
 const images: SimilarImages[] = [
   {
-    url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    uid: 'rc-upload-1652377326817-3',
     similarityScore: 0.99,
   },
   {
-    url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    uid: 'rc-upload-1652377523439-3',
     similarityScore: 0.99,
   },
   {
-    url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    uid: 'rc-upload-1652377523439-7',
     similarityScore: 0.99,
   },
 ];
@@ -48,7 +51,8 @@ const Search = () => {
   );
   const props: UploadProps = {
     name: 'search',
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    showUploadList: false,
+    listType: 'picture-card',
     beforeUpload: (file) => {
       const isImage = file.type.includes('image/');
       if (!isImage) {
@@ -73,8 +77,20 @@ const Search = () => {
         });
       }
     },
-    showUploadList: false,
-    listType: 'picture-card',
+    async customRequest({ onError, onSuccess, file }) {
+      // @ts-ignore
+      const uid = file.uid;
+      const today = new Date().toLocaleDateString().replace(/\//g, '-');
+      const storageRef = ref(storage, `${today}/${uid}`);
+      try {
+        await uploadBytes(storageRef, file as File);
+        // @ts-ignore
+        onSuccess('success');
+      } catch (e) {
+        // @ts-ignore
+        onError(e);
+      }
+    },
   };
   return (
     <>
@@ -103,7 +119,7 @@ const Search = () => {
       <div className="flex justify-center my-3">
         {similarImages.map((similarImage, index) => (
           <div key={index} className="mx-2 flex flex-col items-center">
-            <Image width={200} src={similarImage.url} preview={false} />
+            <FirebaseImage uid={similarImage.uid} />
             <div className="underline decoration-sky-500/30 text-xl my-2">
               Similarity:
             </div>
