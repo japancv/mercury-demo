@@ -1,12 +1,25 @@
 import { Upload, message, UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
+import { storage } from '../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
 
 const { Dragger } = Upload;
 
 const props: UploadProps = {
   name: 'file',
+  listType: 'picture-card',
   multiple: true,
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+  beforeUpload: (file) => {
+    const isImage = file.type.includes('image/');
+    if (!isImage) {
+      message.error(`${file.name} is not an image file`);
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isImage && isLt2M;
+  },
   onChange(info) {
     const { status } = info.file;
     if (status !== 'uploading') {
@@ -18,10 +31,20 @@ const props: UploadProps = {
       message.error(`${info.file.name} file upload failed.`);
     }
   },
-  onDrop(e) {
-    console.log('Dropped files', e.dataTransfer.files);
+  async customRequest({ onError, onSuccess, file }) {
+    // @ts-ignore
+    const uid = file.uid;
+    const today = new Date().toLocaleDateString().replace(/\//g, '-');
+    const storageRef = ref(storage, `${today}/${uid}`);
+    try {
+      await uploadBytes(storageRef, file as File);
+      // @ts-ignore
+      onSuccess('success');
+    } catch (e) {
+      // @ts-ignore
+      onError(e);
+    }
   },
-  listType: 'picture-card',
 };
 
 const UploadImage = () => (
