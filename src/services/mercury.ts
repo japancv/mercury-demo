@@ -66,3 +66,29 @@ export const addFace = ({
   };
   return axios(options);
 };
+
+export const searchFace = ({
+  dbId,
+  base64Image,
+}: {
+  dbId: string;
+  base64Image: string | ArrayBuffer;
+}) => {
+  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases/search`;
+  const method = 'post';
+  const authorizationHeaders = generateAuthorizationHeaders(url, method);
+  const options = {
+    method,
+    headers: { 'content-type': 'application/json', ...authorizationHeaders },
+    data: {
+      image: {
+        data: base64Image,
+      },
+      db_ids: [dbId],
+      top_k: 3,
+      min_score: 0.8,
+    },
+    url,
+  };
+  return axios(options);
+};
