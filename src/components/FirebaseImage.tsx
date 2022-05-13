@@ -1,18 +1,17 @@
 import { Image } from 'antd';
 import { useState, useEffect } from 'react';
-import { storage } from '../firebase';
+import { storage } from '../services/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 
-const FirebaseImage = ({ uid }: { uid: string }) => {
+const FirebaseImage = ({ storageRef }: { storageRef: string }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   useEffect(() => {
     const fetchImage = async () => {
-      const today = new Date().toLocaleDateString().replace(/\//g, '-');
-      const url = await getDownloadURL(ref(storage, `${today}/${uid}`));
+      const url = await getDownloadURL(ref(storage, storageRef));
       setImageUrl(url);
     };
     fetchImage();
-  }, [uid]);
+  }, [storageRef]);
   return imageUrl ? (
     <Image width={200} src={imageUrl} preview={false} />
   ) : (

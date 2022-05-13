@@ -6,43 +6,27 @@ import {
 } from '@ant-design/icons';
 import { useState } from 'react';
 import FirebaseImage from './FirebaseImage';
-import { storage } from '../firebase';
+import { storage } from '../services/firebase';
+import { getBase64 } from '../utils/base64Image';
+import { searchFace } from '../services/mercury';
 import { ref, uploadBytes } from 'firebase/storage';
 
-const getBase64 = (
-  img: File | undefined,
-  callback: (imageUrl: string | ArrayBuffer | null) => void
-) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img as unknown as Blob);
-};
-
 type SimilarImages = {
-  uid: string;
-  similarityScore: number;
+  feature: {
+    uid: string;
+    extra_info: string;
+  };
+  score: number;
 };
 
-const images: SimilarImages[] = [
-  {
-    uid: 'rc-upload-1652377326817-3',
-    similarityScore: 0.99,
-  },
-  {
-    uid: 'rc-upload-1652377523439-3',
-    similarityScore: 0.99,
-  },
-  {
-    uid: 'rc-upload-1652377523439-7',
-    similarityScore: 0.99,
-  },
-];
+const dbId = '0c377fc1-e9e0-45c2-8e80-91252b48d000';
 
 const Search = () => {
   const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [imageUrlBase64, setImageUrlBase64] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [similarImages, setSimilarImages] = useState<SimilarImages[]>(images);
+  const [similarImages, setSimilarImages] = useState<SimilarImages[]>([]);
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -71,8 +55,8 @@ const Search = () => {
       }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          setImageUrlBase64(imageUrl as string);
+        getBase64(info.file.originFileObj, (base64Image) => {
+          setImageUrlBase64(base64Image as string);
           setLoading(false);
         });
       }
@@ -92,6 +76,24 @@ const Search = () => {
       }
     },
   };
+
+  const onClick = async () => {
+    try {
+      setSearching(true);
+      const base64 = imageUrlBase64?.split(',');
+      const response = (await searchFace({
+        dbId,
+        base64Image: base64?.[1] || '',
+      })) as any;
+      const batch = response.data.batches[0];
+      const matches = batch.features;
+      setSimilarImages(matches);
+    } catch (error) {
+      message.error('some error');
+    } finally {
+      setSearching(false);
+    }
+  };
   return (
     <>
       <div className="flex justify-center">
@@ -110,20 +112,21 @@ const Search = () => {
           <Button
             className="w-48 my-3"
             type="primary"
+            onClick={onClick}
             icon={<SearchOutlined />}
           >
-            Search
+            {searching ? 'Searching...' : 'Search'}
           </Button>
         </div>
       </div>
       <div className="flex justify-center my-3">
         {similarImages.map((similarImage, index) => (
           <div key={index} className="mx-2 flex flex-col items-center">
-            <FirebaseImage uid={similarImage.uid} />
+            <FirebaseImage storageRef={similarImage.feature.extra_info} />
             <div className="underline decoration-sky-500/30 text-xl my-2">
               Similarity:
             </div>
-            <div className="text-base">{similarImage.similarityScore}</div>
+            <div className="text-base">{similarImage.score}</div>
           </div>
         ))}
       </div>
