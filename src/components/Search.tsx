@@ -7,16 +7,8 @@ import {
 import { useState } from 'react';
 import FirebaseImage from './FirebaseImage';
 import { storage } from '../services/firebase';
+import { getBase64 } from '../utils/base64Image';
 import { ref, uploadBytes } from 'firebase/storage';
-
-const getBase64 = (
-  img: File | undefined,
-  callback: (imageUrl: string | ArrayBuffer | null) => void
-) => {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img as unknown as Blob);
-};
 
 type SimilarImages = {
   uid: string;
@@ -71,8 +63,8 @@ const Search = () => {
       }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
-        getBase64(info.file.originFileObj, (imageUrl) => {
-          setImageUrlBase64(imageUrl as string);
+        getBase64(info.file.originFileObj, (base64Image) => {
+          setImageUrlBase64(base64Image as string);
           setLoading(false);
         });
       }

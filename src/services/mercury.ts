@@ -13,9 +13,6 @@ export const generateAuthorizationHeaders = (
   const dateTimeString = new Date().toUTCString();
   const path = new URL(url).pathname;
   const signature = `x-date: ${dateTimeString}\n${httpMethod.toUpperCase()} ${path} HTTP/1.1`;
-  // const hmacSignature = createHmac('sha256', mercurySecretKey || '')
-  //   .update(signature)
-  //   .digest('base64');
   const hmacSignature = CryptoJS.enc.Base64.stringify(
     CryptoJS.HmacSHA256(signature, mercurySecretKey || '')
   );
@@ -27,7 +24,7 @@ export const generateAuthorizationHeaders = (
 };
 
 export const listFeatureDatabase = () => {
-  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases/features`;
+  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases`;
   const method = 'get';
   const authorizationHeaders = generateAuthorizationHeaders(url, method);
   const options = {
@@ -46,13 +43,14 @@ export const addFace = ({
   firebaseObjectId,
 }: {
   dbId: string;
-  base64Image: string;
+  base64Image: string | ArrayBuffer;
   firebaseObjectId: string;
 }) => {
-  const url = `${mercuryBaseUrl}/${mercuryAppId}/databases/${dbId}/features`;
-  const authorizationHeaders = generateAuthorizationHeaders(url, 'post');
+  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases/${dbId}/features`;
+  const method = 'post';
+  const authorizationHeaders = generateAuthorizationHeaders(url, method);
   const options = {
-    method: 'POST',
+    method,
     headers: { 'content-type': 'application/json', ...authorizationHeaders },
     data: {
       images: [
