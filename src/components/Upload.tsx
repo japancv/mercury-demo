@@ -1,9 +1,12 @@
 import { Upload, message, UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
-import { storage } from '../firebase';
+import { storage } from '../services/firebase';
+import { listFeatureDatabase } from '../services/mercury';
 import { ref, uploadBytes } from 'firebase/storage';
 
 const { Dragger } = Upload;
+
+listFeatureDatabase();
 
 const props: UploadProps = {
   name: 'file',

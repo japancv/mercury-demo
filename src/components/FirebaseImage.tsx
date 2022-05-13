@@ -1,6 +1,6 @@
 import { Image } from 'antd';
 import { useState, useEffect } from 'react';
-import { storage } from '../firebase';
+import { storage } from '../services/firebase';
 import { ref, getDownloadURL } from 'firebase/storage';
 
 const FirebaseImage = ({ uid }: { uid: string }) => {

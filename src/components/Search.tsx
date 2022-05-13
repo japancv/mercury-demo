@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import { useState } from 'react';
 import FirebaseImage from './FirebaseImage';
-import { storage } from '../firebase';
+import { storage } from '../services/firebase';
 import { ref, uploadBytes } from 'firebase/storage';
 
 const getBase64 = (
