@@ -9,11 +9,10 @@ const storage = admin.storage();
 
 const today = new Date().toLocaleDateString().replace(/\//g, '-');
 
-process.env.TZ = 'Asia/Tokyo'; // set timezone to tokyo
-
-exports.cleanupDataDaily = functions.pubsub
-  .schedule('59 8 * * *') // runs every night at 23:59
+exports.cleanupDataDaily = functions
   .region('asia-northeast1')
+  .pubsub.schedule('59 8 * * *') // runs every night at 23:59
+  .timeZone('Asia/Tokyo')
   .onRun(() => {
     const bucket = storage.bucket();
     bucket.deleteFiles({
