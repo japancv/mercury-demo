@@ -14,6 +14,10 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
+### `npm --prefix functions run serve`
+
+start the proxy server for dev purpose
+
 ### Deploy Cloud Functions
 
 `npm --prefix functions run deploy`
