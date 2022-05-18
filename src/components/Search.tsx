@@ -51,6 +51,9 @@ const Search = () => {
         setLoading(true);
         return;
       }
+      if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
         getBase64(info.file.originFileObj, (base64Image) => {
