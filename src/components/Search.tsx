@@ -8,7 +8,7 @@ import { useState } from 'react';
 import FirebaseImage from './FirebaseImage';
 import { storage } from '../services/firebase';
 import { getBase64 } from '../utils/base64Image';
-import { searchFace } from '../services/mercury';
+import { searchFace, listFeatureDatabase } from '../services/mercury';
 import { ref, uploadBytes } from 'firebase/storage';
 
 type SimilarImages = {
@@ -18,8 +18,6 @@ type SimilarImages = {
   };
   score: number;
 };
-
-const dbId = '0c377fc1-e9e0-45c2-8e80-91252b48d000';
 
 const Search = () => {
   const [loading, setLoading] = useState(false);
@@ -81,6 +79,8 @@ const Search = () => {
     try {
       setSearching(true);
       const base64 = imageUrlBase64?.split(',');
+      const res = (await listFeatureDatabase()) as any;
+      const dbId = res.databases[0];
       const response = (await searchFace({
         dbId,
         base64Image: base64?.[1] || '',
