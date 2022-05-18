@@ -38,7 +38,7 @@ exports.listFeatureDatabase = () => {
 
 exports.removeFeatureDatabase = (dbId) => {
   const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases/${dbId}`;
-  const method = 'post';
+  const method = 'delete';
   const authorizationHeaders = generateAuthorizationHeaders(url, method);
   const options = {
     method,
