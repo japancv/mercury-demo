@@ -1,13 +1,11 @@
 import { Upload, message, UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { storage } from '../services/firebase';
-import { addFace } from '../services/mercury';
+import { addFace, listFeatureDatabase } from '../services/mercury';
 import { getBase64 } from '../utils/base64Image';
 import { ref, uploadBytes } from 'firebase/storage';
 
 const { Dragger } = Upload;
-
-const dbId = '0c377fc1-e9e0-45c2-8e80-91252b48d000';
 
 const UploadImage = () => {
   const props: UploadProps = {
@@ -45,6 +43,8 @@ const UploadImage = () => {
         getBase64(file as File, async (base64Image) => {
           try {
             const base64 = (base64Image as string).split(',');
+            const res = (await listFeatureDatabase()) as any;
+            const dbId = res.data.databases[0];
             const { data } = await addFace({
               dbId,
               base64Image: base64[1],
