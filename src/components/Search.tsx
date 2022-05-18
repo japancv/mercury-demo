@@ -83,7 +83,7 @@ const Search = () => {
       setSearching(true);
       const base64 = imageUrlBase64?.split(',');
       const res = (await listFeatureDatabase()) as any;
-      const dbId = res.databases[0];
+      const dbId = res.data.databases[0];
       const response = (await searchFace({
         dbId,
         base64Image: base64?.[1] || '',
@@ -92,8 +92,9 @@ const Search = () => {
       const matches = batch.features;
       setSimilarImages(matches);
     } catch (error) {
+      console.log(error);
       const { response } = error as any;
-      if (response.data) {
+      if (response && response.data) {
         message.error(`
           ${response.data.code}, ${response.data.message}.`);
       }

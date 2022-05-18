@@ -3,11 +3,9 @@ var express = require('express'),
   request = require('request'),
   bodyParser = require('body-parser'),
   app = express();
+var { generateAuthorizationHeaders } = require('./mercury');
 
-var myLimit = typeof process.argv[2] != 'undefined' ? process.argv[2] : '50mb';
-console.log('Using limit: ', myLimit);
-
-app.use(bodyParser.json({ limit: myLimit }));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 app.all('*', function (req, res) {
   // Set CORS headers: allow all origins, methods, and headers: you may want to lock this down in a production environment
@@ -19,25 +17,16 @@ app.all('*', function (req, res) {
   );
 
   if (req.method === 'OPTIONS') {
-    // CORS Preflight
-    res.send();
+    res.status(204).send('');
   } else {
     var targetURL = 'https://mercury-ap-northeast-1.japancv.co.jp';
-    if (!targetURL) {
-      res.send(500, {
-        error: 'There is no Target-Endpoint header in the request',
-      });
-      return;
-    }
-    const headers = {
-      authorization: req.header('authorization'),
-      'x-date': req.header('x-date'),
-      // 'content-type': req.header('content-type')
-    };
+    const method = req.method;
+    const url = targetURL + req.url;
+    const authorizationHeaders = generateAuthorizationHeaders(url, method);
     const options = {
       method: req.method,
       url: targetURL + req.url,
-      headers,
+      headers: authorizationHeaders,
       body: JSON.stringify(req.body),
     };
     console.log(options);
