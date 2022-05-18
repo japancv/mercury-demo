@@ -85,7 +85,6 @@ const Search = () => {
         dbId,
         base64Image: base64?.[1] || '',
       })) as any;
-      console.log(response);
       const batch = response.data.batches[0];
       const matches = batch.features;
       setSimilarImages(matches);
