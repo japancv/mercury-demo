@@ -30,6 +30,7 @@ export const listFeatureDatabase = () => {
   const options = {
     method,
     headers: {
+      'content-type': 'application/json',
       ...authorizationHeaders,
     },
     url,
