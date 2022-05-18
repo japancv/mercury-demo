@@ -23,17 +23,16 @@ exports.cors = functions
         const headers = {
           authorization: req.header('authorization'),
           'x-date': req.header('x-date'),
-          'content-type': req.get('content-type')
-            ? req.get('content-type')
-            : 'application/json',
         };
 
         const options = {
           method: req.method,
           url,
           headers,
-          ody: JSON.stringify(req.body),
+          body: JSON.stringify(req.body),
         };
+
+        console.log(options);
 
         request(options, function (error, response, body) {
           console.log(body);
