@@ -8,7 +8,7 @@ const mercuryBaseUrl = process.env.MERCURY_BASE_URL;
 
 const today = new Date().toLocaleDateString().replace(/\//g, '-');
 
-var generateAuthorizationHeaders = (uri, httpMethod) => {
+const generateAuthorizationHeaders = (uri, httpMethod) => {
   const date = new Date().toUTCString();
   const urlPath = new URL(uri).pathname;
   const signature = `x-date: ${date}\n${httpMethod.toUpperCase()} ${urlPath} HTTP/1.1`;
@@ -21,6 +21,8 @@ var generateAuthorizationHeaders = (uri, httpMethod) => {
     Authorization: authorization,
   };
 };
+
+exports.generateAuthorizationHeaders = generateAuthorizationHeaders;
 
 exports.listFeatureDatabase = () => {
   const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases`;
