@@ -6,6 +6,8 @@ const mercuryAccessKey = process.env.MERCURY_ACCESS_KEY;
 const mercurySecretKey = process.env.MERCURY_SECRET_KEY;
 const mercuryBaseUrl = process.env.MERCURY_BASE_URL;
 
+const today = new Date().toLocaleDateString().replace(/\//g, '-');
+
 var generateAuthorizationHeaders = (uri, httpMethod) => {
   const date = new Date().toUTCString();
   const urlPath = new URL(uri).pathname;
@@ -33,3 +35,38 @@ exports.listFeatureDatabase = () => {
   };
   return axios(options);
 };
+
+exports.removeFeatureDatabase = (dbId) => {
+  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases/${dbId}`;
+  const method = 'post';
+  const authorizationHeaders = generateAuthorizationHeaders(url, method);
+  const options = {
+    method,
+    headers: {
+      ...authorizationHeaders,
+    },
+    url,
+  };
+  return axios(options);
+};
+
+exports.createFeatureDatabase = () => {
+  const url = `${mercuryBaseUrl}/openapi/face/v1/${mercuryAppId}/databases`;
+  const method = 'post';
+  const authorizationHeaders = generateAuthorizationHeaders(url, method);
+  const options = {
+    method,
+    headers: {
+      ...authorizationHeaders,
+    },
+    data: {
+      name: today,
+      description: `${today} feature database.`,
+      max_size: 1000,
+    },
+    url,
+  };
+  return axios(options);
+};
+
+exports.getToday = today;
