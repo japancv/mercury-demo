@@ -5,6 +5,7 @@ const {
   createFeatureDatabase,
   getToday,
 } = require('./mercury');
+const { cors } = require('./cors');
 
 const deleteAndCreateNew = async () => {
   try {
@@ -32,3 +33,5 @@ exports.manualCleanup = functions
   .https.onRequest(() => {
     deleteAndCreateNew();
   });
+
+exports.cors = cors;

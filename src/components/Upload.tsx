@@ -28,9 +28,7 @@ const UploadImage = () => {
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
-      if (status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
+      if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
@@ -47,11 +45,21 @@ const UploadImage = () => {
             const base64 = (base64Image as string).split(',');
             const res = (await listFeatureDatabase()) as any;
             const dbId = res.data.databases[0];
-            await addFace({
+            const { data } = await addFace({
               dbId,
               base64Image: base64[1],
               firebaseObjectId: filePath,
             });
+            const { results } = data;
+            const { name } = file as File;
+            if (results[0].code === 0) {
+              message.success(`${name} file uploaded successfully.`);
+            } else {
+              results.forEach((r: { message: string; code: number }) => {
+                message.error(`
+                  ${name} file has the following error: ${r.code}, ${r.message}.`);
+              });
+            }
             // @ts-ignore
             onSuccess('success');
           } catch (error) {

@@ -51,6 +51,9 @@ const Search = () => {
         setLoading(true);
         return;
       }
+      if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
         getBase64(info.file.originFileObj, (base64Image) => {
@@ -89,7 +92,12 @@ const Search = () => {
       const matches = batch.features;
       setSimilarImages(matches);
     } catch (error) {
-      message.error('some error');
+      const { response } = error as any;
+      if (response.data) {
+        message.error(`
+          ${response.data.code}, ${response.data.message}.`);
+      }
+      setSimilarImages([]);
     } finally {
       setSearching(false);
     }
