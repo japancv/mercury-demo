@@ -1,21 +1,12 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-
-admin.initializeApp({
-  storageBucket: 'gcp-tech-dev.appspot.com',
-});
-
-const storage = admin.storage();
-
-const today = new Date().toLocaleDateString().replace(/\//g, '-');
+const { listFeatureDatabase } = require('./mercury');
 
 exports.cleanupDataDaily = functions
   .region('asia-northeast1')
-  .pubsub.schedule('59 8 * * *') // runs every night at 23:59
+  .pubsub.schedule('59 23 * * *') // runs every night at 23:59
   .timeZone('Asia/Tokyo')
   .onRun(() => {
-    const bucket = storage.bucket();
-    bucket.deleteFiles({
-      prefix: `${today}/`,
-    });
+    console.log('Deletion started...');
+    listFeatureDatabase();
+    console.log('Deletion ended...');
   });
