@@ -25,3 +25,10 @@ start the proxy server for dev purpose
 ### Deploy Hosting
 
 The hosting will automatically deployed through github actions
+
+### Env Var
+
+you need two env variable files:
+
+- `.env.local` in the root path
+- `.env` in the `functions` folder
