@@ -25,13 +25,21 @@ exports.cleanupDataDaily = functions
   .pubsub.schedule('59 23 * * *') // runs every night at 23:59
   .timeZone('Asia/Tokyo')
   .onRun(() => {
+    console.log('This will be run every day at 11:59 PM!');
     deleteAndCreateNew();
+    return null;
   });
 
 exports.manualCleanup = functions
   .region('asia-northeast1')
-  .https.onRequest(() => {
-    deleteAndCreateNew();
+  .https.onRequest((req, res) => {
+    deleteAndCreateNew()
+      .then(() => {
+        res.send('success');
+      })
+      .catch(() => {
+        res.send('error');
+      });
   });
 
 exports.cors = cors;
