@@ -86,8 +86,8 @@ export const searchFace = ({
         data: base64Image,
       },
       db_ids: [dbId],
-      top_k: 3,
-      min_score: 0.8,
+      top_k: 6,
+      min_score: 0.0,
     },
     url,
   };

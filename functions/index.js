@@ -30,8 +30,14 @@ exports.cleanupDataDaily = functions
 
 exports.manualCleanup = functions
   .region('asia-northeast1')
-  .https.onRequest(() => {
-    deleteAndCreateNew();
+  .https.onRequest((req, res) => {
+    deleteAndCreateNew()
+      .then(() => {
+        res.send('success');
+      })
+      .catch(() => {
+        res.send('error');
+      });
   });
 
 exports.cors = cors;

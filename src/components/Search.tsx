@@ -25,6 +25,7 @@ const Search = () => {
   const [imageUrlBase64, setImageUrlBase64] = useState<string | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [similarImages, setSimilarImages] = useState<SimilarImages[]>([]);
+  const [noResult, setNoResult] = useState<boolean>(false);
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -91,6 +92,7 @@ const Search = () => {
       const batch = response.data.batches[0];
       const matches = batch.features;
       setSimilarImages(matches);
+      setNoResult(matches.length === 0);
     } catch (error) {
       console.log(error);
       const { response } = error as any;
@@ -138,6 +140,8 @@ const Search = () => {
             <div className="text-base">{similarImage.score}</div>
           </div>
         ))}
+        {noResult &&
+          'There is currently no similar image to yours. Please upload some to get started.'}
       </div>
     </>
   );
